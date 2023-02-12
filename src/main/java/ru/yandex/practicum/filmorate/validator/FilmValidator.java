@@ -27,10 +27,6 @@ public class FilmValidator {
             throw new ValidationException(NAME_NULL_ALERT);
         }
 
-        if (film.getDescription() == null) {
-            throw new ValidationException(DESCRIPTION_NULL_ALERT);
-        }
-
         if (film.getDescription().length() > MAX_DESCRIPTION_LENGTH) {
             throw new ValidationException(DESCRIPTION_LENGTH_ALERT);
         }

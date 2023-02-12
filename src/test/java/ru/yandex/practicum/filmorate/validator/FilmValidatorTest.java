@@ -66,18 +66,6 @@ class FilmValidatorTest {
     }
 
     @Test
-    void shouldNotPassNullDescription() {
-        Film film = new Film(CORRECT_NAME, null, CORRECT_DATE, CORRECT_DURATION);
-
-        final ValidationException e = assertThrows(
-                ValidationException.class,
-                () -> FilmValidator.validate(film)
-        );
-
-        assertEquals(FilmValidator.DESCRIPTION_NULL_ALERT, e.getMessage());
-    }
-
-    @Test
     void shouldNotPassDescriptionOver200Characters() {
         Film film = new Film(CORRECT_NAME, DESCRIPTION_201_CHARS, CORRECT_DATE, CORRECT_DURATION);
 

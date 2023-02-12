@@ -3,7 +3,6 @@ package ru.yandex.practicum.filmorate.controller;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.validator.FilmValidator;
 import javax.validation.Valid;
 import javax.validation.ValidationException;
 import java.util.Comparator;
@@ -24,14 +23,11 @@ public class FilmController {
 
     @PostMapping
     public Film create(@Valid @RequestBody Film film) {
-        if (FilmValidator.validate(film)) {
-            film.setId(currentId++);
-            films.add(film);
+        film.setId(currentId++);
+        films.add(film);
+        log.debug("Film created: {}", film);
 
-            log.debug("Film created: {}", film);
-            return film;
-        }
-        return null;
+        return film;
     }
 
     @PutMapping
@@ -39,12 +35,9 @@ public class FilmController {
         if (!films.remove(film)) {
             throw new ValidationException("Film with id: " + film.getId() + " not found!");
         }
+        films.add(film);
+        log.debug("Film updated: {}", film);
 
-        if (FilmValidator.validate(film)) {
-            films.add(film);
-            log.debug("Film updated: {}", film);
-            return film;
-        }
-        return null;
+        return film;
     }
 }

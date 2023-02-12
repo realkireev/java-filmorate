@@ -4,7 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.validator.UserValidator;
+import javax.validation.Valid;
 import java.util.Comparator;
 import java.util.Set;
 import java.util.TreeSet;
@@ -22,29 +22,34 @@ public class UserController {
     }
 
     @PostMapping
-    public User create(@RequestBody User user) {
-        if (UserValidator.validate(user)) {
-            user.setId(currentId++);
-            users.add(user);
-            log.debug("User created: {}", user);
+    public User create(@Valid @RequestBody User user) {
+        user.setId(currentId++);
+        setNameIfNotExists(user);
 
-            return user;
-        }
-        return null;
+        users.add(user);
+        log.debug("User created: {}", user);
+
+        return user;
     }
 
     @PutMapping
-    public User update(@RequestBody User user) {
+    public User update(@Valid @RequestBody User user) {
         if (!users.remove(user)) {
             throw new ValidationException("User with id: " + user.getId() + " not found!");
         }
+        setNameIfNotExists(user);
 
-        if (UserValidator.validate(user)) {
-            users.add(user);
-            log.debug("User updated: {}", user);
+        users.add(user);
+        log.debug("User updated: {}", user);
 
-            return user;
+        return user;
+    }
+    
+    private void setNameIfNotExists(User user) {
+        if (user != null) {
+            if (user.getName() == null || user.getName().isBlank()) {
+                user.setName(user.getLogin());
+            }
         }
-        return null;
     }
 }
