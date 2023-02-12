@@ -11,7 +11,7 @@ public class UserValidator {
         }
 
         if (user.getEmail().isBlank() || !user.getEmail().contains("@")) {
-            throw new ValidationException("Email should be contain @!");
+            throw new ValidationException("Email should contain @!");
         }
 
         if (user.getLogin().contains(" ")) {

@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate.controller;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.validator.FilmValidator;
@@ -11,6 +12,7 @@ import java.util.TreeSet;
 
 @RestController
 @RequestMapping("/films")
+@Slf4j
 public class FilmController {
     private final Set<Film> films = new TreeSet<>(Comparator.comparingInt(Film::getId));
     private int currentId = 1;
@@ -25,6 +27,8 @@ public class FilmController {
         if (FilmValidator.validate(film)) {
             film.setId(currentId++);
             films.add(film);
+
+            log.debug("Film created: {}", film);
             return film;
         }
         return null;
@@ -38,6 +42,7 @@ public class FilmController {
 
         if (FilmValidator.validate(film)) {
             films.add(film);
+            log.debug("Film updated: {}", film);
             return film;
         }
         return null;
