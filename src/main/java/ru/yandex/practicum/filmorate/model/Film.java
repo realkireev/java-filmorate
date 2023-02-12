@@ -7,8 +7,8 @@ import java.time.LocalDate;
 public class Film {
     private static int currentId = 0;
     private int id;
-    private String name;
-    private String description;
-    private LocalDate releaseDate;
-    private int duration;
+    private final String name;
+    private final String description;
+    private final LocalDate releaseDate;
+    private final int duration;
 }

@@ -14,7 +14,6 @@ import java.util.TreeSet;
 @Slf4j
 public class UserController {
     private final Set<User> users = new TreeSet<>(Comparator.comparingInt(User::getId));
-    private final UserValidator userValidator = new UserValidator();
     private int currentId = 1;
 
     @GetMapping
@@ -24,7 +23,7 @@ public class UserController {
 
     @PostMapping
     public User create(@RequestBody User user) {
-        if (userValidator.validate(user)) {
+        if (UserValidator.validate(user)) {
             user.setId(currentId++);
             users.add(user);
             log.debug("User created: {}", user);
@@ -40,7 +39,7 @@ public class UserController {
             throw new ValidationException("User with id: " + user.getId() + " not found!");
         }
 
-        if (userValidator.validate(user)) {
+        if (UserValidator.validate(user)) {
             users.add(user);
             log.debug("User updated: {}", user);
 
