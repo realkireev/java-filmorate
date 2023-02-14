@@ -7,8 +7,7 @@ import java.time.LocalDate;
 
 @Data
 public class Film {
-    private static int currentId = 0;
-    private int id;
+    private Integer id;
     @NotBlank
     private final String name;
     @Size(max = 200)
