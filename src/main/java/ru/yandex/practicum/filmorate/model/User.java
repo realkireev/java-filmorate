@@ -11,6 +11,7 @@ public class User {
     @Email
     private final String email;
     @NotBlank
+    @Pattern(regexp = "^\\S+$", message = "Whitespaces are not allowed in login")
     private final String login;
     private String name;
     @PastOrPresent
