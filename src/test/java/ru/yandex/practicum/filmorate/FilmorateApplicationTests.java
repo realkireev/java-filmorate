@@ -7,8 +7,8 @@ import ru.yandex.practicum.filmorate.controller.FilmController;
 import ru.yandex.practicum.filmorate.controller.UserController;
 import ru.yandex.practicum.filmorate.service.FilmService;
 import ru.yandex.practicum.filmorate.service.UserService;
-import ru.yandex.practicum.filmorate.storage.FilmStorage;
-import ru.yandex.practicum.filmorate.storage.UserStorage;
+import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
+import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
