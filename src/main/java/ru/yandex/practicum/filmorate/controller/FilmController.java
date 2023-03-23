@@ -16,7 +16,6 @@ import java.util.Map;
 @RequestMapping("/films")
 public class FilmController {
     private final FilmService filmService;
-    private final static String DEFAULT_POPULAR_COUNT = "10";
 
     @Autowired
     public FilmController(FilmService filmService) {
@@ -34,7 +33,7 @@ public class FilmController {
     }
 
     @GetMapping("/popular")
-    public Collection<Film> findPopular(@RequestParam(defaultValue = DEFAULT_POPULAR_COUNT) int count) {
+    public Collection<Film> findPopular(@RequestParam(defaultValue = FilmService.DEFAULT_POPULAR_COUNT) int count) {
         return filmService.findPopular(count);
     }
 
