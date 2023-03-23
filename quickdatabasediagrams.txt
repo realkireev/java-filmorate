@@ -1,0 +1,54 @@
+film
+-
+id PK int
+name varchar
+description varchar(200)
+release_date date
+duration int
+mpa_rating_id int FK >- mpa_rating.id
+created_at timestamp
+deleted_at timestamp
+
+mpa_rating
+-
+id PK int
+name varchar
+description varchar
+
+genre
+----
+id PK int
+name varchar
+
+film_genre
+-
+film_id PK int FK >- film.id
+genre_id PK int FK >- genre.id
+
+user
+-
+id PK int
+email varchar
+login varchar
+password varchar
+last_name varchar
+first_name varchar
+middle_name varchar
+birthday date
+created_at timestamp
+deleted_at timestamp
+
+friendship
+-
+user_id PK int FK >- user.id
+friend_id PK int FK >- user.id
+created_at timestamp
+confirmed_at timestamp
+deleted_at timestamp
+
+film_user_like
+-
+film_id PK int FK >- film.id
+user_id PK int FK >- user.id
+created_at timestamp
+deleted_at timestamp
