@@ -33,8 +33,8 @@ import java.util.Map;
 public class FilmControllerTest {
     @Autowired
     private MockMvc mockMvc;
-    private final static String ENDPOINT = "/films";
-    private final static String CONTENT_TYPE = "application/json";
+    private static final String ENDPOINT = "/films";
+    private static final String CONTENT_TYPE = "application/json";
 
     @Test
     public void test001ShouldReturnEmptyArray() throws Exception {

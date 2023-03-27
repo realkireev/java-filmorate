@@ -31,8 +31,8 @@ import java.util.Map;
 public class UserControllerTest {
     @Autowired
     private MockMvc mockMvc;
-    private final static String ENDPOINT = "/users";
-    private final static String CONTENT_TYPE = "application/json";
+    private static final String ENDPOINT = "/users";
+    private static final String CONTENT_TYPE = "application/json";
 
     @Test
     public void test001ShouldCreateCorrectUser() throws Exception {

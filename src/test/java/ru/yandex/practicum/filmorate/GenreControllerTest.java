@@ -23,7 +23,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class GenreControllerTest {
     @Autowired
     private MockMvc mockMvc;
-    private final static String ENDPOINT = "/genres";
+    private static final String ENDPOINT = "/genres";
 
     @Test
     public void test001ShouldReturnGenreId1() throws Exception {

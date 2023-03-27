@@ -23,7 +23,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class MpaControllerTest {
     @Autowired
     private MockMvc mockMvc;
-    private final static String ENDPOINT = "/mpa";
+    private static final String ENDPOINT = "/mpa";
 
     @Test
     public void test001ShouldReturnMpaId1() throws Exception {
