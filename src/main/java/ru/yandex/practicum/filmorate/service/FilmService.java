@@ -14,7 +14,6 @@ import java.util.stream.Collectors;
 @Service
 @Slf4j
 public class FilmService {
-    public final static String DEFAULT_POPULAR_COUNT = "10";
     private final FilmStorage filmStorage;
     private final RatingDao ratingStorage;
 

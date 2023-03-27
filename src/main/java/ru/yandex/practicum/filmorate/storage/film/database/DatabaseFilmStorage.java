@@ -13,6 +13,7 @@ import ru.yandex.practicum.filmorate.storage.genre.GenreStorage;
 import ru.yandex.practicum.filmorate.storage.mpa.MpaStorage;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.util.*;
 
 @Component
@@ -22,7 +23,15 @@ public class DatabaseFilmStorage implements FilmStorage {
     private final MpaStorage mpaStorage;
     private final GenreStorage genreStorage;
 
-    public static final String SQL_SELECT_ALL_FILMS = "SELECT * FROM \"film\" WHERE \"deleted_at\" IS NULL";
+    public static final String SQL_SELECT_ALL_FILMS = "SELECT f.\"id\", f.\"name\", f.\"description\", " +
+            "f.\"release_date\", f.\"duration\", f.\"mpa_id\", g.\"id\" genre_id, g.\"name\" genre_name, " +
+            "m.\"name\" mpa_name, m.\"description\" mpa_description " +
+            "FROM \"film\" f " +
+            "LEFT JOIN \"film_genre\" fg ON f.\"id\" = fg.\"film_id\" " +
+            "LEFT JOIN \"genre\" g ON g.\"id\" = fg.\"genre_id\"" +
+            "LEFT JOIN \"mpa\" m ON m.\"id\" = f.\"mpa_id\"" +
+            "WHERE f.\"deleted_at\" IS NULL";
+
     public static final String SQL_SELECT_FILM_BY_ID = "SELECT * FROM \"film\" WHERE \"id\" = ?";
     public static final String SQL_INSERT_FILM =
             "INSERT INTO \"film\" (\"name\", \"description\", \"release_date\", \"duration\", \"mpa_id\") " +
@@ -47,7 +56,63 @@ public class DatabaseFilmStorage implements FilmStorage {
 
     @Override
     public Collection<Film> findAll() {
-        return jdbcTemplate.query(SQL_SELECT_ALL_FILMS, (rs, rowNum) -> createFilmObject(rs));
+        SqlRowSet rs = jdbcTemplate.queryForRowSet(SQL_SELECT_ALL_FILMS);
+
+        Map<Integer, Film> films = new HashMap<>();
+        Map<Integer, Mpa> mpaCache = new HashMap<>();
+        Map<Integer, Genre> genreCache = new HashMap<>();
+
+        while (rs.next()) {
+            Integer filmId = rs.getInt("id");
+            String filmName = rs.getString("name");
+            String filmDescription = rs.getString("description");
+            LocalDate filmReleaseDate = Objects.requireNonNull(rs.getDate("release_date")).toLocalDate();
+            int filmDuration = rs.getInt("duration");
+            Integer mpaId = rs.getInt("MPA_ID");
+            String mpaName = rs.getString("MPA_NAME");
+            String mpaDescription = rs.getString("MPA_DESCRIPTION");
+            Integer genreId = rs.getInt("GENRE_ID");
+            String genreName = rs.getString("GENRE_NAME");
+
+            Film film;
+            Mpa mpa;
+            Genre genre;
+
+            if (mpaName == null) {
+                mpa = null;
+            } else if (mpaCache.containsKey(mpaId)) {
+                mpa = mpaCache.get(mpaId);
+            } else {
+                mpa = new Mpa(mpaId, mpaName, mpaDescription);
+                mpaCache.put(mpaId, mpa);
+            }
+
+            if (genreName == null) {
+                genre = null;
+            } else if (genreCache.containsKey(genreId)) {
+                    genre = genreCache.get(genreId);
+            } else {
+                    genre = new Genre(genreId, genreName);
+                    genreCache.put(genreId, genre);
+            }
+
+            if (films.containsKey(filmId)) {
+                film = films.get(filmId);
+                film.getGenres().add(genre);
+            } else {
+                List<Genre> genres = new ArrayList<>();
+                if (genre != null) {
+                    genres.add(genre);
+                }
+
+                film = new Film(filmId, filmName, filmDescription, filmReleaseDate, filmDuration, mpa,
+                        genres, Collections.emptyList());
+            }
+
+            films.put(filmId, film);
+        }
+
+        return films.values();
     }
 
     @Override
@@ -123,22 +188,6 @@ public class DatabaseFilmStorage implements FilmStorage {
             return Optional.of(film);
         }
         return Optional.empty();
-    }
-
-    private Film createFilmObject(ResultSet rs) throws SQLException {
-        Integer id = rs.getInt("id");
-        Optional<Mpa> mpa = mpaStorage.findById(rs.getInt("mpa_id"));
-
-        return new Film(
-                id,
-                rs.getString("name"),
-                rs.getString("description"),
-                rs.getDate("release_date").toLocalDate(),
-                rs.getInt("duration"),
-                mpa.isEmpty() ? null : mpa.get(),
-                findGenresByFilmId(id),
-                findLikesByFilmId(id)
-        );
     }
 
     private Collection<Genre> findGenresByFilmId(Integer filmId) {
