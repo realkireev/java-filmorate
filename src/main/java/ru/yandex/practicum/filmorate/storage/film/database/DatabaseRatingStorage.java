@@ -14,13 +14,13 @@ import java.util.*;
 public class DatabaseRatingStorage implements RatingDao {
     private final JdbcTemplate jdbcTemplate;
 
-    private final static String SQL_ADD_LIKE = "MERGE INTO \"film_user_like\" " +
+    private static final String SQL_ADD_LIKE = "MERGE INTO \"film_user_like\" " +
             "(\"film_id\", \"user_id\", \"deleted_at\") VALUES (?, ?, NULL)";
 
-    private final static String SQL_REMOVE_LIKE = "UPDATE \"film_user_like\" SET \"deleted_at\" = NOW() " +
+    private static final String SQL_REMOVE_LIKE = "UPDATE \"film_user_like\" SET \"deleted_at\" = NOW() " +
             "WHERE \"film_id\" = ? AND \"user_id\" = ?";
 
-    private final static String SQL_FIND_MOST_POPULAR_FILMS = "SELECT TOP ? f.*, COALESCE(l.likes, 0) \"likes\" " +
+    private static final String SQL_FIND_MOST_POPULAR_FILMS = "SELECT TOP ? f.*, COALESCE(l.likes, 0) \"likes\" " +
             "FROM \"film\" f LEFT JOIN (SELECT \"film_id\", COUNT(*) likes FROM \"film_user_like\" " +
             "WHERE \"deleted_at\" IS NULL GROUP BY \"film_id\") AS l ON f.\"id\" = l.\"film_id\" " +
             "WHERE f.\"deleted_at\" IS NULL ORDER BY likes DESC";

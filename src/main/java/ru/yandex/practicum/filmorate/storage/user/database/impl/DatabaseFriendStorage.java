@@ -18,13 +18,13 @@ import java.util.*;
 public class DatabaseFriendStorage implements FriendDao {
     private final JdbcTemplate jdbcTemplate;
 
-    private final static String SQL_FIND_FRIENDS = "SELECT u.* FROM \"friendship\" f, \"user\" u " +
+    private static final String SQL_FIND_FRIENDS = "SELECT u.* FROM \"friendship\" f, \"user\" u " +
             "WHERE u.\"id\" = f.\"friend_id\" AND f.\"user_id\" = ? AND f.\"deleted_at\" IS NULL " +
             "AND f.\"confirmed_at\" IS NOT NULL";
-    private final static String SQL_ADD_FRIEND = "MERGE INTO \"friendship\" (\"user_id\", \"friend_id\") VALUES (?,?)";
-    private final static String SQL_CONFIRM_FRIENDSHIP = "UPDATE \"friendship\" SET \"confirmed_at\" = NOW() " +
+    private static final String SQL_ADD_FRIEND = "MERGE INTO \"friendship\" (\"user_id\", \"friend_id\") VALUES (?,?)";
+    private static final String SQL_CONFIRM_FRIENDSHIP = "UPDATE \"friendship\" SET \"confirmed_at\" = NOW() " +
             "WHERE \"user_id\" = ? AND \"friend_id\" = ?";
-    private final static String SQL_REMOVE_FRIEND = "UPDATE \"friendship\" SET \"deleted_at\" = NOW() " +
+    private static final String SQL_REMOVE_FRIEND = "UPDATE \"friendship\" SET \"deleted_at\" = NOW() " +
             "WHERE \"user_id\" = ? AND \"friend_id\" = ?";
 
     @Autowired

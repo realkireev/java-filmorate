@@ -23,7 +23,7 @@ public class DatabaseFilmStorage implements FilmStorage {
     private final MpaStorage mpaStorage;
     private final GenreStorage genreStorage;
 
-    public static final String SQL_SELECT_ALL_FILMS = "SELECT f.\"id\", f.\"name\", f.\"description\", " +
+    private static final String SQL_SELECT_ALL_FILMS = "SELECT f.\"id\", f.\"name\", f.\"description\", " +
             "f.\"release_date\", f.\"duration\", f.\"mpa_id\", g.\"id\" genre_id, g.\"name\" genre_name, " +
             "m.\"name\" mpa_name, m.\"description\" mpa_description " +
             "FROM \"film\" f " +
@@ -32,20 +32,20 @@ public class DatabaseFilmStorage implements FilmStorage {
             "LEFT JOIN \"mpa\" m ON m.\"id\" = f.\"mpa_id\"" +
             "WHERE f.\"deleted_at\" IS NULL";
 
-    public static final String SQL_SELECT_FILM_BY_ID = "SELECT * FROM \"film\" WHERE \"id\" = ?";
-    public static final String SQL_INSERT_FILM =
+    private static final String SQL_SELECT_FILM_BY_ID = "SELECT * FROM \"film\" WHERE \"id\" = ?";
+    private static final String SQL_INSERT_FILM =
             "INSERT INTO \"film\" (\"name\", \"description\", \"release_date\", \"duration\", \"mpa_id\") " +
                     "VALUES (?, ?, ?, ?, ?) ";
-    public static final String SQL_GET_LAST_ID = "SELECT TOP 1 \"id\" FROM \"film\" ORDER BY \"id\" DESC";
-    public static final String SQL_UPDATE_FILM =
+    private static final String SQL_GET_LAST_ID = "SELECT TOP 1 \"id\" FROM \"film\" ORDER BY \"id\" DESC";
+    private static final String SQL_UPDATE_FILM =
             "UPDATE \"film\" SET \"name\" = ?, \"description\" = ?, \"release_date\" = ?, \"duration\" = ?," +
                     " \"mpa_id\" = ? WHERE \"id\" = ?";
-    public static final String SQL_SELECT_GENRES_BY_FILM_ID = "SELECT * FROM \"film_genre\" WHERE \"film_id\" = ?";
-    public static final String SQL_SELECT_LIKES_BY_FILM_ID = "SELECT * FROM \"film_user_like\" WHERE \"film_id\" = ? " +
+    private static final String SQL_SELECT_GENRES_BY_FILM_ID = "SELECT * FROM \"film_genre\" WHERE \"film_id\" = ?";
+    private static final String SQL_SELECT_LIKES_BY_FILM_ID = "SELECT * FROM \"film_user_like\" WHERE \"film_id\" = ? " +
             "AND \"deleted_at\" IS NULL";
-    public static final String SQL_INSERT_FILM_GENRE = "MERGE INTO \"film_genre\" (\"film_id\", \"genre_id\") " +
+    private static final String SQL_INSERT_FILM_GENRE = "MERGE INTO \"film_genre\" (\"film_id\", \"genre_id\") " +
             "VALUES (?, ?)";
-    public static final String SQL_DELETE_FILM_GENRE = "DELETE FROM \"film_genre\" WHERE \"film_id\" = ?";
+    private static final String SQL_DELETE_FILM_GENRE = "DELETE FROM \"film_genre\" WHERE \"film_id\" = ?";
 
     @Autowired
     public DatabaseFilmStorage(JdbcTemplate jdbcTemplate, MpaStorage mpaStorage, GenreStorage genreStorage) {
