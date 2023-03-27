@@ -13,7 +13,7 @@ import java.util.Collection;
 @RequestMapping("/films")
 public class FilmController {
     private final FilmService filmService;
-    private final static String DEFAULT_POPULAR_COUNT = "10";
+    private static final String DEFAULT_POPULAR_COUNT = "10";
 
     @Autowired
     public FilmController(FilmService filmService) {
