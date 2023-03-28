@@ -6,9 +6,8 @@ import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.ObjectNotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
-import ru.yandex.practicum.filmorate.storage.film.RatingStorage;
+import ru.yandex.practicum.filmorate.storage.film.database.RatingDao;
 import java.util.Collection;
-import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -16,10 +15,10 @@ import java.util.stream.Collectors;
 @Slf4j
 public class FilmService {
     private final FilmStorage filmStorage;
-    private final RatingStorage ratingStorage;
+    private final RatingDao ratingStorage;
 
     @Autowired
-    public FilmService(FilmStorage filmStorage, RatingStorage ratingStorage) {
+    public FilmService(FilmStorage filmStorage, RatingDao ratingStorage) {
         this.filmStorage = filmStorage;
         this.ratingStorage = ratingStorage;
     }
@@ -39,11 +38,8 @@ public class FilmService {
     }
 
     public Collection<Film> findPopular(int count) {
-        return ratingStorage.findAll().entrySet()
+        return ratingStorage.findPopular(count)
                 .stream()
-                .sorted((x1, x2) -> x2.getValue().size() - x1.getValue().size())
-                .limit(count)
-                .map(Map.Entry::getKey)
                 .map(filmStorage::findById)
                 .filter(Optional::isPresent)
                 .map(Optional::get)
@@ -51,10 +47,7 @@ public class FilmService {
     }
 
     public Film create(Film film) {
-        Film result = filmStorage.create(film);
-        ratingStorage.createRatingContainer(result.getId());
-
-        return result;
+        return filmStorage.create(film);
     }
 
     public Film update(Film film) {
@@ -62,17 +55,30 @@ public class FilmService {
         if (result.isEmpty()) {
             throw new ObjectNotFoundException("Film with id: " + film.getId() + " not found!");
         }
-
         return result.get();
     }
 
     public void addLike(Integer filmId, Integer userId) {
-        ratingStorage.addLike(filmId, userId);
-        log.debug("Film with id:{} was liked by user with id:{}", filmId, userId);
+        if (checkFilmExists(filmId)) {
+            ratingStorage.addLike(filmId, userId);
+            log.debug("Film with id:{} was liked by user with id:{}", filmId, userId);
+        } else {
+            throw new ObjectNotFoundException("Film with id: " + filmId + " not found!");
+        }
     }
 
     public void removeLike(Integer filmId, Integer userId) {
-        ratingStorage.removeLike(filmId, userId);
-        log.debug("Film with id:{} was unliked by user with id:{}", filmId, userId);
+        if (checkFilmExists(filmId)) {
+            ratingStorage.removeLike(filmId, userId);
+            log.debug("Film with id:{} was unliked by user with id:{}", filmId, userId);
+        }
+    }
+
+    private boolean checkFilmExists(Integer filmId) {
+        boolean exists = filmStorage.findById(filmId).isPresent();
+        if (!exists) {
+            log.error("Film with id:{} not found", filmId);
+        }
+        return exists;
     }
 }

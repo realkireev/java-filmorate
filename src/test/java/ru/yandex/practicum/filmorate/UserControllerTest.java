@@ -15,20 +15,24 @@ import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.web.servlet.MockMvc;
 import java.util.HashMap;
 import java.util.Map;
 
 @SpringBootTest
 @AutoConfigureMockMvc
+@AutoConfigureTestDatabase
+@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_CLASS)
 @TestMethodOrder(MethodOrderer.MethodName.class)
 public class UserControllerTest {
     @Autowired
     private MockMvc mockMvc;
-    private final static String ENDPOINT = "/users";
-    private final static String CONTENT_TYPE = "application/json";
+    private static final String ENDPOINT = "/users";
+    private static final String CONTENT_TYPE = "application/json";
 
     @Test
     public void test001ShouldCreateCorrectUser() throws Exception {
@@ -239,6 +243,10 @@ public class UserControllerTest {
         int id1 = 1;
         int id2 = 2;
 
+        // Friendship requires confirmation, so this request makes:
+        // id1 becomes a friend for id2,
+        // but id2 isn't a friend for id1 until he confirms it
+
         mockMvc.perform(put(ENDPOINT + "/" + id1 + "/friends/" + id2))
                 .andDo(print())
                 .andExpect(status().isOk());
@@ -275,23 +283,25 @@ public class UserControllerTest {
     }
 
     @Test
-    public void test016ShouldReturnFriendOfUserId2() throws Exception {
+    public void test016ShouldReturnEmptyAsFriendshipRequiresConfirmation() throws Exception {
         int id1 = 2;
-        int friendId = 1;
-        String login = "updated_login";
-        String name = "Updated user";
-        String email = "new@mail.dev";
-        String birthday = "2000-01-01";
 
         mockMvc.perform(get(ENDPOINT + "/" + id1 + "/friends"))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$", hasSize(1)))
-                .andExpect(jsonPath("$[0].id").value(friendId))
-                .andExpect(jsonPath("$[0].login").value(login))
-                .andExpect(jsonPath("$[0].name").value(name))
-                .andExpect(jsonPath("$[0].email").value(email))
-                .andExpect(jsonPath("$[0].birthday").value(birthday));
+                .andExpect(jsonPath("$", hasSize(0)));
+    }
+
+    @Test
+    public void test016_1ShouldMakeFriendsUserId2AndUserId1() throws Exception {
+        int id1 = 2;
+        int id2 = 1;
+
+        // This request is a confirmation of friendship between id1 and id2
+
+        mockMvc.perform(put(ENDPOINT + "/" + id1 + "/friends/" + id2))
+                .andDo(print())
+                .andExpect(status().isOk());
     }
 
     @Test
